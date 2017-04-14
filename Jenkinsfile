@@ -1,10 +1,5 @@
 pipeline {
-  agent {
-    dockerfile {
-      filename 'Dockerfile'
-    }
-    
-  }
+  agent dockerfile
   stages {
     stage('Build') {
       steps {
