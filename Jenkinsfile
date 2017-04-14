@@ -1,14 +1,9 @@
 pipeline {
-  agent {
-    docker {
-      image 'node:latest'
-    }
-    
-  }
+  agent none
   stages {
-    stage('Test') {
+    stage('Version') {
       steps {
-        echo 'Heya'
+        sh 'docker version'
       }
     }
   }
