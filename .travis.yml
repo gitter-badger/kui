@@ -1,0 +1,14 @@
+sudo: required
+
+services:
+  - docker
+
+env:
+- CMAKE_BUILD_TYPE=Debug
+- CMAKE_BUILD_TYPE=Release
+
+before_script:
+  - docker build --tag kui --build-arg CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} .
+
+script:
+  - docker run kwiwk ./kui_test
