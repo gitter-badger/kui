@@ -14,7 +14,7 @@ env:
 - CMAKE_BUILD_TYPE=Release
 
 before_script:
-  - docker build --tag myImage --build-arg CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} .
+  - docker build --tag my_image --build-arg CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} .
 
 script:
-  - docker run myImage ./kui_test
+  - docker run my_image ./kui_test
