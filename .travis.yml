@@ -5,6 +5,10 @@ services:
   
 language: cpp
 
+compiler:
+- clang
+- gcc
+
 env:
 - CMAKE_BUILD_TYPE=Debug
 - CMAKE_BUILD_TYPE=Release
