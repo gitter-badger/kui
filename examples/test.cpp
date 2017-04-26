@@ -1,10 +1,10 @@
-/*** includes ***/
-
-#include <tui/easy_exception.hpp>
-#include <tui/screen.hpp>
+#include <kui/easy_exception.hpp>
+#include <kui/screen.hpp>
 
 int main() {
-  auto& screen = tui::Screen::get_screen();
+  using namespace kui;
+
+  auto& screen = Screen::get_screen();
 
   
   screen.run();

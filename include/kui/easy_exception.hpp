@@ -1,10 +1,10 @@
-#ifndef TUI_EASY_EXCEPTION_H
-#define TUI_EASY_EXCEPTION_H
+#ifndef KUI_EASY_EXCEPTION_H
+#define KUI_EASY_EXCEPTION_H
 
 #include <exception>
 #include <sstream>
 
-#define TUI_EASY_EXCEPTION(NAME, MESSAGE) \
+#define KUI_EASY_EXCEPTION(NAME, MESSAGE) \
 class NAME: public std::exception { \
 public: \
     NAME() { \
