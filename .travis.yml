@@ -15,13 +15,11 @@ env:
 
 before_script:
   - docker build --tag image --build-arg CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -f Dockerfile.dev .
+  - CONTAINER=$(docker create image)
+  - docker cp $CONTAINER:/kui/docs docs
 
 script:
   - docker run image ./kui_test
-  
-after_script:
-  - CONTAINER=$(docker create image)
-  - docker cp $CONTAINER:/kui/docs docs
 
 deploy:
   provider: pages
