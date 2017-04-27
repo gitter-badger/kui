@@ -8,38 +8,41 @@
 
 namespace kui {
 
-  class Screen {
-  public:
-    static Screen & get_screen();
-
     /**
-     * Runs kui app
+     * Main screen
      */
-    void run();
+    class Screen {
+    public:
+        static Screen & get_screen();
 
-    /**
-     * Quit the running kui app
-     */
-    void quit();
+        /**
+         * Runs kui app
+         */
+        void run();
 
-    KUI_EASY_EXCEPTION(Tcsetattr_exception, "tcsetattr failed");
-    KUI_EASY_EXCEPTION(Tcgetattr_exception, "tcgetattr failed");
-    
-  private:
-    Screen();
-    ~Screen();
-  
-    bool _quit;
-  
-    static void _enable_raw_mode();
-    static void _disable_raw_mode();
-    
-    Key_event _get_key_event();
-    
-    static struct termios _orig_termios;
-    
-    static unsigned int _instances;
-  };
+        /**
+         * Quit the running kui app
+         */
+        void quit();
+
+        KUI_EASY_EXCEPTION(Tcsetattr_exception, "tcsetattr failed");
+        KUI_EASY_EXCEPTION(Tcgetattr_exception, "tcgetattr failed");
+
+    private:
+        Screen();
+        ~Screen();
+
+        bool _quit;
+
+        static void _enable_raw_mode();
+        static void _disable_raw_mode();
+
+        Key_event _get_key_event();
+
+        static struct termios _orig_termios;
+
+        static unsigned int _instances;
+    };
 
 }
 
