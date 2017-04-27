@@ -11,8 +11,15 @@ namespace kui {
   class Screen {
   public:
     static Screen & get_screen();
-  
+
+    /**
+     * Runs kui app
+     */
     void run();
+
+    /**
+     * Quit the running kui app
+     */
     void quit();
 
     KUI_EASY_EXCEPTION(Tcsetattr_exception, "tcsetattr failed");
