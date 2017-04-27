@@ -1,1 +1,11 @@
+# Environment & Editors
+.vagrant/
+.vscode/
+.idea/
+
+# Compiled & Built
 build/
+docs/
+
+# Logs
+*.log

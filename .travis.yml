@@ -6,15 +6,23 @@ services:
 language: cpp
 
 compiler:
-- clang
 - gcc
 
 env:
 - CMAKE_BUILD_TYPE=Debug
-- CMAKE_BUILD_TYPE=Release
 
 before_script:
-  - docker build --tag my_image --build-arg CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} .
+  - docker build --tag image --build-arg CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -f Dockerfile.dev .
+  - CONTAINER=$(docker create image)
+  - docker cp $CONTAINER:/kui/docs docs
 
 script:
-  - docker run my_image ./kui_test
+  - docker run image ./kui_test
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  local_dir: docs
+  on:
+    branch: stable
