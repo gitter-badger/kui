@@ -13,6 +13,10 @@ namespace kui {
      */
     class Screen {
     public:
+        
+        /**
+         * Gets the main screen
+         */
         static Screen & get_screen();
 
         /**
