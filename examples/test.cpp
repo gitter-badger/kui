@@ -1,13 +1,33 @@
-#include <kui/easy_exception.hpp>
 #include <kui/screen.hpp>
+#include <kui/logger.hpp>
+#include <kui/input.hpp>
 
 int main() {
-  using namespace kui;
+    using namespace kui;
 
-  auto& screen = Screen::get_screen();
+    auto& screen = Screen::get_screen();
 
-  
-  screen.run();
+    screen.on_input([](auto s, auto input){
 
-  return 0;
+        for(auto c: input.seq) {
+            auto i = static_cast<int>(c);
+            KUI_LOG(debug, "Got: " << i);
+        }
+
+        if(input == Input_const::up) {
+            KUI_LOG(debug, "Got UP");
+        }
+
+        if(input == "q" || input == Input_const::ctrl_q){
+            s->quit();
+        }
+    });
+
+    screen.on_quit([](auto s){
+        KUI_LOG(debug, "Quitting!");
+    });
+
+    screen.run();
+
+    return 0;
 }

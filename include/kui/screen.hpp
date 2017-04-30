@@ -3,8 +3,9 @@
 
 #include <termios.h>
 
-#include <kui/key_event.hpp>
-#include <kui/easy_exception.hpp>
+#include <functional>
+
+#include <kui/input.hpp>
 
 namespace kui {
 
@@ -13,6 +14,9 @@ namespace kui {
      */
     class Screen {
     public:
+        // Callback Types
+        using Callback_on_input = std::function<void(Screen *, Input)>;
+        using Callback_on_quit = std::function<void(Screen *)>;
         
         /**
          * Gets the main screen
@@ -29,19 +33,34 @@ namespace kui {
          */
         void quit();
 
-        KUI_EASY_EXCEPTION(Tcsetattr_exception, "tcsetattr failed");
-        KUI_EASY_EXCEPTION(Tcgetattr_exception, "tcgetattr failed");
+        /**
+         * Set callback to be called when input is entered
+         * @param callback
+         */
+        void on_input(Callback_on_input callback) { _on_input_callback = callback; }
+
+        /**
+         * Set callback to be called when the screen is about to be quit
+         * @param callback
+         */
+        void on_quit(Callback_on_quit callback) {_on_quit_callback = callback; }
+
 
     private:
         Screen();
         ~Screen();
 
         bool _quit;
+        unsigned long _total_updates;
 
         static void _enable_raw_mode();
         static void _disable_raw_mode();
 
-        Key_event _get_key_event();
+        Input _get_input();
+
+        // Event Callbacks
+        Callback_on_input _on_input_callback;
+        Callback_on_quit _on_quit_callback;
 
         static struct termios _orig_termios;
 
