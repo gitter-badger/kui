@@ -11,7 +11,7 @@ project(${PROJECT_TEST})
 set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include/)
 set(KUI_INCLUDE_DIRS ${INCLUDE_DIRS} PARENT_SCOPE)
 
-set(LIB_SOURCES src/box.cpp src/screen.cpp)
+set(LIB_SOURCES src/box.cpp src/screen.cpp src/input.cpp)
 set(TEST_SOURCES test/logger.cpp)
 set(EXAMPLES examples/sanity.cpp examples/test.cpp)
 
