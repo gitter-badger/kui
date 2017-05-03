@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Build Image') {
       steps {
-        sh '''docker rm -f kui_jenkins
+        sh '''docker rmi -f kui_jenkins
 docker build -t kui_jenkins -f Dockerfile.dev .'''
       }
     }
