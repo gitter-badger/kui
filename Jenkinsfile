@@ -3,7 +3,10 @@ pipeline {
   stages {
     stage('Build Image') {
       steps {
-        sh '''docker rmi -f kui_jenkins
+        sh '''# Ensure image is deleted
+docker rmi -f kui_jenkins || :
+
+
 docker build -t kui_jenkins -f Dockerfile.dev .'''
       }
     }
