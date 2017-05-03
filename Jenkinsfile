@@ -15,7 +15,6 @@ docker build -t kui_jenkins -f Dockerfile.dev .'''
     stage('Generate Docs') {
       steps {
         sh 'docker run --rm -v artifacts/docs:../docs kui_jenkins cd .. && doxygen'
-        archiveArtifacts 'artifacts/docs/*'
       }
     }
   }
