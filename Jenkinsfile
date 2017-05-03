@@ -12,12 +12,12 @@ docker build -t kui_jenkins -f Dockerfile.dev .'''
     }
     stage('Test') {
       steps {
-        sh 'docker run --rm kui_jenkins ./kui_test'
+        sh 'docker run --rm kui_jenkins build/kui_test'
       }
     }
     stage('Generate Docs') {
       steps {
-        sh 'docker run --rm -v artifacts/docs:../docs kui_jenkins cd .. && doxygen'
+        sh 'docker run --rm -v artifacts/docs:docs kui_jenkins doxygen'
       }
     }
   }
