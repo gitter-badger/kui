@@ -8,7 +8,8 @@ pipeline {
   stages {
     stage('Test') {
       steps {
-        sh './kui_test'
+        sh '''ls
+./kui_test'''
       }
     }
   }
