@@ -19,7 +19,7 @@ before_script:
 script:
   - docker run --rm development build/kui_test
   
-after_script:
+before_deploy:
   - docker run --rm -v ${TRAVIS_BUILD_DIR}/docs:/prj/docs development doxygen
 
 deploy:
