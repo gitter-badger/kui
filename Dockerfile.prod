@@ -1,10 +1,12 @@
 FROM alpine:latest
 
-ARG CMAKE_BUILD_TYPE=Debug
+ARG CMAKE_BUILD_TYPE=Release
+ARG CC=gcc
+ARG CXX=g++
 
-RUN apk add --no-cache gcc g++ clang make cmake
-ADD . kui
-WORKDIR kui
+RUN apk add --no-cache gcc g++ clang make cmake gtest gtest-dev doxygen
+ADD . prj
+WORKDIR prj
 
 RUN mkdir build
 WORKDIR build
@@ -12,4 +14,6 @@ WORKDIR build
 RUN cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} ..
 RUN make
 
-CMD ["./kui_test"]
+WORKDIR ..
+
+CMD ["echo", "Nothing to run."]
