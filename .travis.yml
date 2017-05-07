@@ -7,17 +7,20 @@ language: cpp
 
 compiler:
 - gcc
+- clang
 
 env:
 - CMAKE_BUILD_TYPE=Debug
+- CMAKE_BUILD_TYPE=Release
 
 before_script:
   - docker build --tag image --build-arg CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -f Dockerfile.dev .
-  - CONTAINER=$(docker create image)
-  - docker cp $CONTAINER:/kui/docs docs
 
 script:
-  - docker run image ./kui_test
+  - docker run --rm development build/kui_test
+  
+after_script:
+  - docker run --rm -v ${TRAVIS_BUILD_DIR}/docs:/prj/docs development doxygen
 
 deploy:
   provider: pages
@@ -26,3 +29,5 @@ deploy:
   local_dir: docs
   on:
     branch: stable
+    condition: "$CC = gcc"
+    condition: "$CMAKE_BUILD_TYPE=Debug"
