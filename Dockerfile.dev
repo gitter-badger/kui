@@ -1,6 +1,8 @@
 FROM alpine:latest
 
 ARG CMAKE_BUILD_TYPE=Debug
+ARG CC=gcc
+ARG CXX=g++
 
 RUN apk add --no-cache gcc g++ clang make cmake gtest gtest-dev doxygen
 ADD . prj
