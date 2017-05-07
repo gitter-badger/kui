@@ -2,25 +2,24 @@ sudo: required
 
 services:
   - docker
-  
+
 language: cpp
 
-compiler:
-- gcc
-- clang
-
 env:
-- CMAKE_BUILD_TYPE=Debug
-- CMAKE_BUILD_TYPE=Release
+  - CMAKE_BUILD_TYPE=Debug CC=gcc CXX=g++
+  - CMAKE_BUILD_TYPE=Debug CC=clang CXX=clang++
+  - CMAKE_BUILD_TYPE=Release CC=gcc CXX=g++
+  - CMAKE_BUILD_TYPE=Release CC=clang CXX=clang++
 
 before_script:
-  - docker build --tag development --build-arg CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -f Dockerfile.dev .
+  - docker build --tag development --build-arg CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} --build-arg CC=${CC} --build-arg CXX=${CXX} -f Dockerfile.dev .
 
 script:
   - docker run --rm development build/kui_test
   
-after_script:
+before_deploy:
   - docker run --rm -v ${TRAVIS_BUILD_DIR}/docs:/prj/docs development doxygen
+  - sudo chown -R ${USER}:${USER} docs/
 
 deploy:
   provider: pages
@@ -29,5 +28,5 @@ deploy:
   local_dir: docs
   on:
     branch: stable
-    condition: "$CC = gcc"
-    condition: "$CMAKE_BUILD_TYPE=Debug"
+    condition: $CMAKE_BUILD_TYPE = Debug
+    condition: $CC = gcc

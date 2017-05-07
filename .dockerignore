@@ -1,0 +1,22 @@
+# Built files
+build/
+docs/
+
+# Editors & Environments
+.idea/
+.vscode/
+
+# Vagrant
+.vagrant/
+Vagrantfile
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile.dev
+Dockerfile.prod
+.dockerignore
+
+
