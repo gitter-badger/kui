@@ -21,6 +21,7 @@ script:
   
 before_deploy:
   - docker run --rm -v ${TRAVIS_BUILD_DIR}/docs:/prj/docs development doxygen
+  - sudo chown -R ${USER} docs/
 
 deploy:
   provider: pages
