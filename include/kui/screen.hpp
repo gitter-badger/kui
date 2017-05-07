@@ -4,8 +4,11 @@
 #include <termios.h>
 
 #include <functional>
+#include <memory>
+#include <vector>
 
 #include <kui/input.hpp>
+#include <kui/box.hpp>
 
 namespace kui {
 
@@ -15,8 +18,9 @@ namespace kui {
     class Screen {
     public:
         // Callback Types
-        using Callback_on_input = std::function<void(Screen *, Input)>;
-        using Callback_on_quit = std::function<void(Screen *)>;
+        using Callback_on_input = std::function<void(Screen &, Input)>;
+        using Callback_on_update = std::function<void(Screen &)>;
+        using Callback_on_quit = std::function<void(Screen &)>;
         
         /**
          * Gets the main screen
@@ -33,17 +37,12 @@ namespace kui {
          */
         void quit();
 
-        /**
-         * Set callback to be called when input is entered
-         * @param callback
-         */
         void on_input(Callback_on_input callback) { _on_input_callback = callback; }
-
-        /**
-         * Set callback to be called when the screen is about to be quit
-         * @param callback
-         */
+        void on_update(Callback_on_update callback) { _on_update_callback = callback; }
         void on_quit(Callback_on_quit callback) {_on_quit_callback = callback; }
+
+        std::shared_ptr<Box> add_box();
+        bool remove_box(std::shared_ptr<Box>);
 
 
     private:
@@ -60,7 +59,10 @@ namespace kui {
 
         // Event Callbacks
         Callback_on_input _on_input_callback;
+        Callback_on_update _on_update_callback;
         Callback_on_quit _on_quit_callback;
+
+        std::vector<std::shared_ptr<Box>> _boxes;
 
         static struct termios _orig_termios;
 

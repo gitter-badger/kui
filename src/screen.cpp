@@ -1,5 +1,7 @@
 #include <cassert>
 
+#include <algorithm>
+
 #include <kui/screen.hpp>
 #include <kui/input.hpp>
 
@@ -18,8 +20,8 @@ namespace kui {
         _quit = false;
         _total_updates = 0;
 
-        _on_input_callback = [](auto s, auto input){};
-        _on_quit_callback = [](auto s){};
+        _on_input_callback = [](auto& s, auto input){};
+        _on_quit_callback = [](auto& s){};
 
         Screen::_enable_raw_mode();
     }
@@ -33,18 +35,33 @@ namespace kui {
         while(!_quit) {
             auto event = _get_input();
 
-            _on_input_callback(this, event);
+            _on_input_callback(*this, event);
         }
     }
 
     void Screen::quit() {
-        _on_quit_callback(this);
+        _on_quit_callback(*this);
         _quit = true;
     }
 
+    std::shared_ptr<Box> Screen::add_box() {
+        auto box = std::make_shared<Box>(this);
+        _boxes.push_back(box);
+        box->init();
+        return box;
+    }
+
+    bool Screen::remove_box(std::shared_ptr<Box> box) {
+        auto box_it = std::find(_boxes.begin(), _boxes.end(), box);
+        if(box_it == _boxes.end()) return false;
+
+        _boxes.erase(box_it);
+        return true;
+    }
+
     Screen & Screen::get_screen() {
-    static Screen s;
-    return s;
+        static Screen s;
+        return s;
     }
 
     void Screen::_enable_raw_mode() {
