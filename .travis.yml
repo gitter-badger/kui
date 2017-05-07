@@ -3,8 +3,6 @@ sudo: required
 services:
   - docker
 
-language: cpp
-
 env:
   - CMAKE_BUILD_TYPE=Debug CC=gcc CXX=g++
   - CMAKE_BUILD_TYPE=Debug CC=clang CXX=clang++
