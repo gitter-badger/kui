@@ -8,6 +8,7 @@ Kwiwk + Text User Interface = Kui!
  - [Description](#description)
  - [Getting Started](#getting-started)
  - [Using Kui](#using-kui)
+ - [Showcase](#showcase)
 
 ### Description
 
@@ -76,4 +77,4 @@ int main() {
 ```
 
 
-
+### Showcase
