@@ -9,6 +9,7 @@
 
 #include <kui/input.hpp>
 #include <kui/box.hpp>
+#include <kui/point.hpp>
 
 namespace kui {
 
@@ -28,6 +29,11 @@ namespace kui {
         static Screen & get_screen();
 
         /**
+         * Update the display
+         */
+        void update();
+
+        /**
          * Runs kui app
          */
         void run();
@@ -42,7 +48,11 @@ namespace kui {
         void on_quit(Callback_on_quit callback) {_on_quit_callback = callback; }
 
         std::shared_ptr<Box> add_box();
+        std::shared_ptr<Box> add_box(Box::Callback_on_init callback);
         bool remove_box(std::shared_ptr<Box>);
+
+        unsigned int rows() const { return _rows; }
+        unsigned int columns() const { return _columns; }
 
 
     private:
@@ -52,8 +62,17 @@ namespace kui {
         bool _quit;
         unsigned long _total_updates;
 
+        unsigned int _rows;
+        unsigned int _columns;
+
         static void _enable_raw_mode();
         static void _disable_raw_mode();
+        void _move_cursor(unsigned int row, unsigned int column);
+        void _move_down(unsigned int n);
+        void _save_cursor();
+        void _load_cursor();
+
+        Point<unsigned int> _cursor;
 
         Input _get_input();
 

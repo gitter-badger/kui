@@ -32,6 +32,7 @@ namespace kui {
     }
 
     void Screen::run() {
+
         while(!_quit) {
             auto event = _get_input();
 
@@ -45,9 +46,14 @@ namespace kui {
     }
 
     std::shared_ptr<Box> Screen::add_box() {
-        auto box = std::make_shared<Box>(this);
+        auto box = std::make_shared<Box>(this, [](Box& b){});
         _boxes.push_back(box);
-        box->init();
+        return box;
+    }
+
+    std::shared_ptr<Box> Screen::add_box(Box::Callback_on_init callback) {
+        auto box = std::make_shared<Box>(this, callback);
+        _boxes.push_back(box);
         return box;
     }
 
@@ -62,6 +68,23 @@ namespace kui {
     Screen & Screen::get_screen() {
         static Screen s;
         return s;
+    }
+
+    void Screen::update() {
+        _on_update_callback(*this);
+
+        for(auto& box: _boxes) {
+            box->update();
+
+
+            auto& buf = box->buffer();
+            using size_type = Vector_2d<char>::size_type;
+            for(size_type r = 0; r < buf.rows(); r++) {
+                for(size_type r = 0; r < buf.rows(); r++) {
+
+                }
+            }
+        }
     }
 
     void Screen::_enable_raw_mode() {
@@ -85,10 +108,30 @@ namespace kui {
     }
 
     void Screen::_disable_raw_mode() {
-    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &Screen::_orig_termios) == -1) {
-      throw "tcsetattr failed";
+        if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &Screen::_orig_termios) == -1) {
+          throw "tcsetattr failed";
+        }
     }
+
+    void Screen::_move_cursor(unsigned int row, unsigned int column) {
+        assert(row < _rows);
+        assert(column < _columns);
+
+        std::string buf = "\033[" + std::to_string(row) + ";" + std::to_string(column) + "H";
+        write(STDOUT_FILENO, buf.c_str(), buf.size());
+        _cursor.row = row;
+        _cursor.column = column;
     }
+
+    void Screen::_move_down(unsigned int n) {
+        assert(_cursor.row + n < _rows);
+
+        std::string buf = "\033[" + std::to_string(n) + "B";
+        write(STDOUT_FILENO, buf.c_str(), buf.size());
+    }
+
+    void Screen::_save_cursor() { write(STDOUT_FILENO, "\033[s", 3); }
+    void Screen::_load_cursor() { write(STDOUT_FILENO, "\033[u", 3); }
 
     Input Screen::_get_input() {
         int nread;
@@ -104,18 +147,18 @@ namespace kui {
         }
 
         // if escape sequence
-        input.seq.push_back(c);
+        input.push_back(c);
         if(c == '\x1b') {
             // Failed to read a second or third character following escape sequence
             if (read(STDIN_FILENO, &c, 1) != 1) {
                 return input;
             }
-            input.seq.push_back(c);
+            input.push_back(c);
 
             if (read(STDIN_FILENO, &c, 1) != 1) {
                 return input;
             }
-            input.seq.push_back(c);
+            input.push_back(c);
             return input;
         }
 
