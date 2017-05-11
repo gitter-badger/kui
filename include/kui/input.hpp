@@ -5,28 +5,7 @@
 
 namespace kui {
 
-    /**
-     * Represents input in the form of character sequences
-     */
-    class Input {
-    public:
-
-        /**
-         * Constructors
-         * @{
-         */
-        Input(): seq("") {}
-        Input(std::string sequence): seq(sequence) {}
-        Input(const char * sequence): seq(sequence) {}
-        /** @} */
-
-        /**
-         * Character sequence
-         */
-        std::string seq;
-
-        friend bool operator==(const Input & lhs, const Input & rhs) { return lhs.seq == rhs.seq; }
-    };
+    using Input = std::string;
 
     /**
      * Common input constants
