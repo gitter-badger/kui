@@ -20,15 +20,14 @@ namespace kui {
         _on_update_callback(*this);
     }
 
-    void Box::write_c(unsigned int row, unsigned int column, char c) {
+    void Box::write(unsigned int row, unsigned int column, std::string s) {
         assert(row < _buffer.rows());
         assert(column < _buffer.columns());
 
-        _buffer(row, column) = c;
-    }
-
-    void Box::write_str(unsigned int row, unsigned int column, std::string s) {
-        //TODO: write to box
+        for(auto c: s) {
+            _buffer(row, column) = c;
+            column++;
+        }
     }
 
     void Box::move(int row, int column) {

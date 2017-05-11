@@ -21,6 +21,7 @@ namespace kui {
         using Callback_on_resize = std::function<void(Box&, Point<unsigned int>, Point<unsigned int>)>;
 
         Box(Screen * screen, Callback_on_init callback);
+        Screen* screen() const { return _screen; }
 
         void update();
 
@@ -30,8 +31,7 @@ namespace kui {
 
         const Vector_2d<char> & buffer() const { return _buffer; }
 
-        void write_c(unsigned int row, unsigned int column, char c);
-        void write_str(unsigned int row, unsigned int column, std::string s);
+        void write(unsigned int row, unsigned int column, std::string s);
 
         unsigned int row() const { return _position.row; }
         unsigned int column () const { return _position.column; }
