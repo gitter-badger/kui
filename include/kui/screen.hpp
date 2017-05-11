@@ -20,7 +20,6 @@ namespace kui {
      */
     class Screen {
     public:
-        // Callback Types
         using Callback_on_input = std::function<void(Screen &, Input)>;
         using Callback_on_update = std::function<void(Screen &)>;
         using Callback_on_resize = std::function<void(Screen &, Point<unsigned int>, Point<unsigned int>)>;
@@ -42,23 +41,60 @@ namespace kui {
         void run();
 
         /**
+         * Resize the screen and trigger callbacks.
+         * Update after resize.
+         * @param row
+         * @param column
+         */
+        void resize(unsigned int row, unsigned int column);
+
+        /**
          * Quit the running kui app
          */
         void quit();
 
+        /**
+         * Update respective callback
+         * @param callback
+         *
+         * @{
+         */
         void on_input(Callback_on_input callback) { _on_input_callback = callback; }
         void on_update(Callback_on_update callback) { _on_update_callback = callback; }
         void on_resize(Callback_on_resize callback) { _on_resize_callback = callback; }
         void on_quit(Callback_on_quit callback) {_on_quit_callback = callback; }
+        /** @} */
 
+        /**
+         * Create a box linked to the screen
+         * @return
+         */
         std::shared_ptr<Box> add_box();
         std::shared_ptr<Box> add_box(Box::Callback_on_init callback);
-        bool remove_box(std::shared_ptr<Box>);
 
+        /**
+         * Remove box
+         * @param box Box to remove
+         * @return
+         */
+        bool remove_box(std::shared_ptr<Box> box);
+
+        /**
+         * Height of the screen
+         * @return
+         */
         unsigned int rows() const { return _rows; }
-        unsigned int columns() const { return _columns; }
-        void resize(unsigned int row, unsigned int column);
 
+        /**
+         * Width of the screen
+         * @return
+         */
+        unsigned int columns() const { return _columns; }
+
+        /**
+         * Used by signal handler to resize on SIGWINCH
+         * @param arg
+         */
         static void resize_signal(int arg);
 
     private:

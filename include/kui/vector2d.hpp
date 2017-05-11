@@ -28,17 +28,36 @@ namespace kui {
             _data.insert(_data.begin(), list.begin(), list.end());
         }
 
+        /**
+         * Access a reference to the element given row & column
+         * @param row
+         * @param column
+         * @return
+         */
         reference operator()(size_type row, size_type column) {
             assert(row < _rows);
             assert(column < _columns);
             return _data[(row * _columns) + column];
         }
+
+        /**
+         * Access a constant reference to the element given row & column
+         * @param row
+         * @param column
+         * @return
+         */
         const_reference operator()(size_type row, size_type column) const {
             assert(row < _rows);
             assert(column < _columns);
             return _data[(row * _columns) + column];
         }
 
+        /**
+         * Resize the 2D vector while preserving as much data as possible
+         * @param rows
+         * @param columns
+         * @param val Default value to initialize new elements with
+         */
         void resize(size_type rows, size_type columns, T val = T()) {
             auto old = *this;
 
@@ -51,7 +70,16 @@ namespace kui {
             }
         }
 
+        /**
+         * Get the height of the 2D vector
+         * @return
+         */
         const size_type rows() const { return _rows; }
+
+        /**
+         * Get the width of the 2D vector
+         * @return
+         */
         const size_type columns() const { return _columns; }
 
     private:
