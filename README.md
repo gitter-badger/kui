@@ -5,12 +5,18 @@ Kwiwk + Text User Interface = Kui!
 
 ### Table Of Contents
  - [Features](#features)
+ - [Showcase](#showcase)
  - [Description](#description)
  - [Getting Started](#getting-started)
  - [Using Kui](#using-kui)
- - [Showcase](#showcase)
+
 
 ### Description
+Kui is a terminal UI solution built as an alternative to ncurses. Sometimes we want a simple UI for people to use, or a basic canvas to draw on to test things out. Implementing a solution in ncurses leaves a lot to be desired with its unpredictable rendering. C Macros make it impossible to implement functions (i.e. _scroll()_) without conflicting with an ncurses macro defined in a global scope.
+
+The goal of Kui is to provide a modern, easy to use, easy to understand terminal user interface framework for people to develop their applications with. Inspiration should be taken from other languages such as JavaScript. A hello world should be as simple as possible while still showcasing some of the more important scaffolding.
+
+### Showcase
 
 ### Features
 
@@ -75,6 +81,3 @@ int main() {
     return 0;
 }
 ```
-
-
-### Showcase
