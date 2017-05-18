@@ -1,8 +1,9 @@
 #include <memory>
 
-#include <kui/screen.hpp>
-#include <kui/logger.hpp>
+#include <kui/attribute.hpp>
 #include <kui/input.hpp>
+#include <kui/logger.hpp>
+#include <kui/screen.hpp>
 
 int main() {
     using namespace kui;
@@ -15,7 +16,7 @@ int main() {
         b.move(0, 0);
         b.resize(1, 20);
 
-        b.write(0, 0, "yo heres a title");
+        b.write(0, 0, "yo heres a title", Attribute(Color::blue, Color::green));
     });
 
     auto counter_box = screen.add_box([](auto& b){
@@ -27,7 +28,7 @@ int main() {
 
     counter_box->on_update([&counter](auto& b){
         counter++;
-        b.write(0, 0, std::to_string(counter));
+        b.write(0, 0, std::to_string(counter), Attribute(Color::blue, Color::magenta));
     });
 
     title_box->on_resize([](auto& b, auto prev, auto curr){
@@ -48,7 +49,7 @@ int main() {
     });
 
     screen.on_resize([](auto& s, auto prev, auto curr){
-        KUI_LOG(debug, "Resized screen from " << prev << " to " << curr);
+        KUI_LOG(debug, "\033[33m Resized screen from " << prev << " to " << curr);
     });
 
     screen.on_quit([](auto& s) {
