@@ -6,8 +6,10 @@
 
 #include <optional.hpp>
 
-#include <kui/vector2d.hpp>
+#include <kui/color.hpp>
 #include <kui/point.hpp>
+#include <kui/vector2d.hpp>
+#include <kui/attribute.hpp>
 
 namespace kui {
 
@@ -48,8 +50,9 @@ namespace kui {
          * @param row
          * @param column
          * @param s
+         * @param attr
          */
-        void write(unsigned int row, unsigned int column, std::string s);
+        void write(unsigned int row, unsigned int column, std::string s, Attribute attr = Attribute());
 
         /**
          * Gets the y position of the box
@@ -89,16 +92,68 @@ namespace kui {
          */
         void resize(unsigned int rows, unsigned int columns);
 
+        /**
+         * Gets the background color
+         * @return
+         */
+        Color background_color() const { return _background_color; }
+
+        /**
+         * Sets the background color
+         * @param c the color to set to
+         */
+        void background_color(Color c) { _background_color = c; }
+
+        /**
+         * Gets the foreground color
+         * @return
+         */
+        Color foreground_color() const { return _foreground_color; }
+
+        /**
+         * Sets the foreground color
+         * @param c the color to set to
+         */
+        void foreground_color(Color c) { _foreground_color = c; }
+
+        /**
+         * Get a constant reference to the attributes
+         * @return
+         */
+        const Vector_2d<Attribute> & attributes() const { return _attributes; }
+
+        /**
+         * Get an attribute at a specific row/column
+         * @param row
+         * @param column
+         * @return
+         */
+        Attribute& attribute(unsigned int row, unsigned int column) { return _attributes(row, column); }
+
+        /**
+         * Get a constant attribute at a specific row/column
+         * @param row
+         * @param column
+         * @return
+         */
+        const Attribute& attribute(unsigned int row, unsigned int column) const { return _attributes(row, column); }
+
+
 
     private:
         Screen * _screen;
 
         Vector_2d<char> _buffer;
+        Vector_2d<Attribute> _attributes;
+
         Point<int> _position;
 
         Callback_on_update _on_update_callback;
         Callback_on_move _on_move_callback;
         Callback_on_resize _on_resize_callback;
+
+        Color _background_color;
+        Color _foreground_color;
     };
 
 }

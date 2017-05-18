@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:edge
 
 ARG CMAKE_BUILD_TYPE=Debug
 ARG CC=gcc
