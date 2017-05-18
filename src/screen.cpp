@@ -4,6 +4,7 @@
 
 #include <kui/screen.hpp>
 #include <kui/input.hpp>
+#include <kui/logger.hpp>
 
 #include <ctype.h>
 #include <errno.h>
@@ -118,24 +119,83 @@ namespace kui {
 
     void Screen::_update_box(Box &b) {
         auto& buf = b.buffer();
+        auto& attrs = b.attributes();
 
         unsigned int cr = b.row();
         unsigned int cc = b.column();
-        _move_cursor(cr, cc);
 
         using size_type = std::vector<char>::size_type;
         std::string s;
+
+        Attribute curr_attr;
+
+        // Move to proper location
+        s.append("\033[" + std::to_string(cr+1) + ";" + std::to_string(cc) + "H");
+
+        if(attrs.rows() > 0 && attrs.columns() > 0) {
+            curr_attr = attrs(0, 0);
+            s.append("\33[0m");
+            if(curr_attr.foreground != Color::none) {
+                int i = static_cast<int>(curr_attr.foreground)-1;
+                // NOTE: Add 29 because fg black = 30
+                i += 30;
+                s.append("\33[" + std::to_string(i) + "m");
+            }
+            if(curr_attr.background != Color::none) {
+                int i = static_cast<int>(curr_attr.background)-1;
+                // NOTE: Add 29 because bg black = 39
+                i += 40;
+                s.append("\33[" + std::to_string(i) + "m");
+            }
+            if(curr_attr.bold) {
+                s.append("\33[1m");
+            }
+            if(curr_attr.underline) {
+                s.append("\33[4m");
+            }
+        }
+
         for(size_type r = 0; r < buf.rows(); r++) {
 
             for(size_type c = 0; c < buf.columns(); c++) {
-                s.push_back(buf(r, c));
+                auto attr = attrs(r, c);
+                auto ch = buf(r, c);
+
+                if(attr != curr_attr) {
+                    curr_attr = attr;
+                    s.append("\33[0m");
+                    if(curr_attr.foreground != Color::none) {
+                        int i = static_cast<int>(curr_attr.foreground)-1;
+                        // NOTE: Add 29 because fg black = 30
+                        i += 30;
+                        s.append("\33[" + std::to_string(i) + "m");
+                    }
+                    if(curr_attr.background != Color::none) {
+                        int i = static_cast<int>(curr_attr.background)-1;
+                        // NOTE: Add 29 because bg black = 39
+                        i += 40;
+                        s.append("\33[" + std::to_string(i) + "m");
+                    }
+                    if(curr_attr.bold) {
+                        s.append("\33[1m");
+                    }
+                    if(curr_attr.underline) {
+                        s.append("\33[4m");
+                    }
+                }
+
+                s.push_back(ch);
             }
 
             if(r+1 < buf.rows()) {
-                s.push_back('\n');
-                s.push_back('\r');
+                s.append("\n\r");
             }
         }
+
+        // Clear attribute printing
+        s.append("\33[0m");
+
+        KUI_LOG(debug, "Writing string: " << s.size() << " - " << s);
 
         write(STDOUT_FILENO, s.c_str(), s.size());
     }
