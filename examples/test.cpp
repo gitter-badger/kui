@@ -49,7 +49,7 @@ int main() {
     });
 
     screen.on_resize([](auto& s, auto prev, auto curr){
-        KUI_LOG(debug, "\033[33m Resized screen from " << prev << " to " << curr);
+        KUI_LOG(debug, "Resized screen from " << prev << " to " << curr);
     });
 
     screen.on_quit([](auto& s) {
