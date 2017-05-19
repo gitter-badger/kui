@@ -50,11 +50,11 @@ namespace kui {
         write(STDOUT_FILENO, s.c_str(), s.size());
     }
 
-    void Ansi::stdout(const std::string & s) {
+    void Ansi::write(const std::string & s) {
         write(STDOUT_FILENO, s.c_str(), s.size());
     }
 
-    void Ansi::stdout(char c) {
+    void Ansi::write(char c) {
         write(STDOUT_FILENO, &c, 1);
     }
 
