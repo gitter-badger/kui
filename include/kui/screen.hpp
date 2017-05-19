@@ -20,10 +20,34 @@ namespace kui {
      */
     class Screen {
     public:
-        using Callback_on_input = std::function<void(Screen &, Input)>;
-        using Callback_on_update = std::function<void(Screen &)>;
-        using Callback_on_resize = std::function<void(Screen &, Point<unsigned int>, Point<unsigned int>)>;
-        using Callback_on_quit = std::function<void(Screen &)>;
+        /**
+         * Event structs
+         * @{
+         */
+        struct Event_on_input {
+            Screen& screen;
+            Input input;
+        };
+        struct Event_on_update {
+            Screen& screen;
+        };
+        struct Event_on_resize {
+            Screen& screen;
+            Point<unsigned int> prev;
+            Point<unsigned int> curr;
+        };
+        using Event_on_quit = Event_on_update;
+        /** @} */
+
+        /**
+         * Event callback types
+         * @{
+         */
+        using Callback_on_input = std::function<void(Event_on_input)>;
+        using Callback_on_update = std::function<void(Event_on_update)>;
+        using Callback_on_resize = std::function<void(Event_on_resize)>;
+        using Callback_on_quit = std::function<void(Event_on_quit)>;
+        /** @} */
         
         /**
          * Gets the main screen
@@ -70,6 +94,12 @@ namespace kui {
          * @return
          */
         std::shared_ptr<Box> add_box();
+
+        /**
+         * Create a box linked to the screen
+         * @param callback Function to be called for initialization purposes
+         * @return
+         */
         std::shared_ptr<Box> add_box(Box::Callback_on_init callback);
 
         /**
@@ -109,11 +139,6 @@ namespace kui {
 
         static void _enable_raw_mode();
         static void _disable_raw_mode();
-        void _move_cursor(unsigned int row, unsigned int column);
-        void _move_down(unsigned int n);
-        void _clear_screen();
-        void _save_cursor();
-        void _load_cursor();
         Point<unsigned int> _get_terminal_size();
 
         Point<unsigned int> _cursor;

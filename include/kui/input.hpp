@@ -5,6 +5,9 @@
 
 namespace kui {
 
+    /**
+     * Terminal input collected as a string
+     */
     using Input = std::string;
 
     /**

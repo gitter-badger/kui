@@ -5,6 +5,7 @@
 #include <kui/screen.hpp>
 #include <kui/input.hpp>
 #include <kui/logger.hpp>
+#include <kui/ansi.hpp>
 
 #include <ctype.h>
 #include <errno.h>
@@ -25,10 +26,10 @@ namespace kui {
         _quit = false;
         _total_updates = 0;
 
-        _on_input_callback = [](auto& s, auto input){};
-        _on_update_callback = [](auto &s){};
-        _on_resize_callback = [](auto& s, auto prev, auto curr){};
-        _on_quit_callback = [](auto& s){};
+        _on_input_callback = [](auto e){};
+        _on_update_callback = [](auto e){};
+        _on_resize_callback = [](auto e){};
+        _on_quit_callback = [](auto e){};
 
         signal(SIGWINCH, Screen::resize_signal);
 
@@ -48,21 +49,21 @@ namespace kui {
         update();
 
         while(!_quit) {
-            auto event = _get_input();
+            auto input = _get_input();
 
-            _on_input_callback(*this, event);
+            _on_input_callback(Event_on_input{*this, input});
 
             update();
         }
     }
 
     void Screen::quit() {
-        _on_quit_callback(*this);
+        _on_quit_callback(Event_on_quit{*this});
         _quit = true;
     }
 
     std::shared_ptr<Box> Screen::add_box() {
-        auto box = std::make_shared<Box>(this, [](Box& b){});
+        auto box = std::make_shared<Box>(this, [](auto e){});
         _boxes.push_back(box);
         return box;
     }
@@ -88,7 +89,7 @@ namespace kui {
         _rows = rows;
         _columns = columns;
         auto curr = Point<unsigned int>(_rows, _columns);
-        _on_resize_callback(*this, prev, curr);
+        _on_resize_callback(Event_on_resize{*this, prev, curr});
 
         update();
     }
@@ -105,13 +106,13 @@ namespace kui {
     }
 
     void Screen::update() {
-        _on_update_callback(*this);
+        _on_update_callback(Event_on_update{*this});
 
         for(auto& b: _boxes) {
             b->update();
         }
 
-        _clear_screen();
+        Ansi::clear_screen();
         for(auto& box: _boxes) {
             _update_box(*box);
         }
@@ -121,83 +122,86 @@ namespace kui {
         auto& buf = b.buffer();
         auto& attrs = b.attributes();
 
-        unsigned int cr = b.row();
-        unsigned int cc = b.column();
-
         using size_type = std::vector<char>::size_type;
         std::string s;
 
         Attribute curr_attr;
 
-        // Move to proper location
-        s.append("\033[" + std::to_string(cr+1) + ";" + std::to_string(cc) + "H");
+        auto start_row = std::max<int>(0, b.row());
+        auto end_row = std::min<int>(_rows, b.row()+b.rows());
 
-        if(attrs.rows() > 0 && attrs.columns() > 0) {
-            curr_attr = attrs(0, 0);
-            s.append("\33[0m");
-            if(curr_attr.foreground != Color::none) {
-                int i = static_cast<int>(curr_attr.foreground)-1;
-                // NOTE: Add 29 because fg black = 30
-                i += 30;
-                s.append("\33[" + std::to_string(i) + "m");
-            }
-            if(curr_attr.background != Color::none) {
-                int i = static_cast<int>(curr_attr.background)-1;
-                // NOTE: Add 29 because bg black = 39
-                i += 40;
-                s.append("\33[" + std::to_string(i) + "m");
-            }
-            if(curr_attr.bold) {
-                s.append("\33[1m");
-            }
-            if(curr_attr.underline) {
-                s.append("\33[4m");
-            }
+        auto start_column = std::max<int>(0, b.column());
+        auto end_column = std::min<int>(_columns, b.column()+b.columns());
+
+        // Exit if nothing to write
+        if(start_row >= end_row || start_column >= end_column) {
+            return;
         }
 
-        for(size_type r = 0; r < buf.rows(); r++) {
+        KUI_LOG(debug, "Start row: " << start_row);
+        KUI_LOG(debug, "End row: " << end_row);
 
-            for(size_type c = 0; c < buf.columns(); c++) {
+        KUI_LOG(debug, "Start column: " << start_column);
+        KUI_LOG(debug, "End column: " << end_column);
+
+        KUI_LOG(debug, start_row - b.row() << " - " << start_column - b.column());
+
+        // Move to proper location
+        Ansi::move_cursor(start_row, start_column);
+
+        curr_attr = attrs(start_row - b.row() , start_column - b.column());
+        Ansi::attribute_reset();
+        Ansi::attribute_foreground(b.foreground_color());
+        Ansi::attribute_background(b.background_color());
+
+        Ansi::attribute_foreground(curr_attr.foreground);
+        Ansi::attribute_background(curr_attr.background);
+
+        if(curr_attr.bold) {
+            Ansi::attribute_bold();
+        }
+        if(curr_attr.underline) {
+            Ansi::attribute_underline();
+        }
+
+        for(int row = start_row; row < end_row; row++) {
+            int r = row - b.row();
+
+            for(int column = start_column; column < end_column; column++) {
+                int c = column - b.column();
+
+                KUI_LOG(debug, "Cursor: (" << row << ", " << column << ")\tBuffer: (" << r << ", " << c << ")");
+
                 auto attr = attrs(r, c);
                 auto ch = buf(r, c);
 
                 if(attr != curr_attr) {
                     curr_attr = attr;
-                    s.append("\33[0m");
-                    if(curr_attr.foreground != Color::none) {
-                        int i = static_cast<int>(curr_attr.foreground)-1;
-                        // NOTE: Add 29 because fg black = 30
-                        i += 30;
-                        s.append("\33[" + std::to_string(i) + "m");
-                    }
-                    if(curr_attr.background != Color::none) {
-                        int i = static_cast<int>(curr_attr.background)-1;
-                        // NOTE: Add 29 because bg black = 39
-                        i += 40;
-                        s.append("\33[" + std::to_string(i) + "m");
-                    }
+                    Ansi::attribute_reset();
+                    Ansi::attribute_foreground(b.foreground_color());
+                    Ansi::attribute_background(b.background_color());
+
+                    Ansi::attribute_foreground(curr_attr.foreground);
+                    Ansi::attribute_background(curr_attr.background);
+
                     if(curr_attr.bold) {
-                        s.append("\33[1m");
+                        Ansi::attribute_bold();
                     }
                     if(curr_attr.underline) {
-                        s.append("\33[4m");
+                        Ansi::attribute_underline();
                     }
                 }
 
-                s.push_back(ch);
+                Ansi::stdout(ch);
             }
 
-            if(r+1 < buf.rows()) {
-                s.append("\n\r");
+            if(r+1 < end_row) {
+                Ansi::newline();
             }
         }
 
         // Clear attribute printing
-        s.append("\33[0m");
-
-        KUI_LOG(debug, "Writing string: " << s.size() << " - " << s);
-
-        write(STDOUT_FILENO, s.c_str(), s.size());
+        Ansi::attribute_reset();
     }
 
     void Screen::_enable_raw_mode() {
@@ -225,20 +229,6 @@ namespace kui {
           throw "tcsetattr failed";
         }
     }
-
-    void Screen::_move_cursor(unsigned int row, unsigned int column) {
-        std::string buf = "\033[" + std::to_string(row+1) + ";" + std::to_string(column) + "H";
-        write(STDOUT_FILENO, buf.c_str(), buf.size());
-        _cursor.row = row;
-        _cursor.column = column;
-    }
-
-    void Screen::_clear_screen() {
-        write(STDOUT_FILENO, "\033[2J", 4);
-    }
-
-    void Screen::_save_cursor() { write(STDOUT_FILENO, "\033[s", 3); }
-    void Screen::_load_cursor() { write(STDOUT_FILENO, "\033[u", 3); }
 
     Point<unsigned int> Screen::_get_terminal_size() {
         struct winsize ws;

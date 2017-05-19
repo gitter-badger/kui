@@ -5,6 +5,9 @@
 
 namespace kui {
 
+    /**
+     * An individual text attribute
+     */
     class Attribute {
     public:
         Attribute(Color fg = Color::none, Color bg = Color::none, bool b = false, bool u = false):

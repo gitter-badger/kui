@@ -10,18 +10,18 @@ namespace kui {
         assert(screen != nullptr);
 
         _screen = screen;
-        _on_update_callback = [](auto& b){};
-        _on_move_callback = [](auto& b, auto prev, auto curr){};
-        _on_resize_callback = [](auto& b, auto prev, auto curr){};
+        _on_update_callback = [](auto e){};
+        _on_move_callback = [](auto e){};
+        _on_resize_callback = [](auto e){};
 
         _background_color = Color::none;
         _foreground_color = Color::none;
 
-        callback(*this);
+        callback(Event_on_init{*this});
     }
 
     void Box::update() {
-        _on_update_callback(*this);
+        _on_update_callback(Event_on_update{*this});
     }
 
     void Box::write(unsigned int row, unsigned int column, std::string s, Attribute attr) {
@@ -40,7 +40,7 @@ namespace kui {
         _position.row = row;
         _position.column = column;
 
-        _on_move_callback(*this, prev, _position);
+        _on_move_callback(Event_on_move{*this, prev, _position});
     }
 
     void Box::resize(unsigned int rows, unsigned int columns) {
@@ -49,7 +49,7 @@ namespace kui {
         _attributes.resize(rows, columns);
         auto curr = Point<unsigned int>(this->rows(), this->columns());
 
-        _on_resize_callback(*this, prev, curr);
+        _on_resize_callback(Event_on_resize{*this, prev, curr});
     }
 
 

@@ -17,6 +17,10 @@ namespace kui {
 
     class Logger {
     public:
+        /**
+         * Get an instance of the logger
+         * @return
+         */
         static Logger & get_instance(){
             static Logger l;
             return l;

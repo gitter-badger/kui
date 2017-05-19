@@ -15,12 +15,40 @@ namespace kui {
 
     class Screen;
 
+    /**
+     * An individual, drawable container
+     */
     class Box {
     public:
-        using Callback_on_init = std::function<void(Box &)>;
-        using Callback_on_update = std::function<void(Box &)>;
-        using Callback_on_move = std::function<void(Box&, Point<int>, Point<int>)>;
-        using Callback_on_resize = std::function<void(Box&, Point<unsigned int>, Point<unsigned int>)>;
+        /**
+         * Event structs
+         * @{
+         */
+        struct Event_on_init {
+            Box & box;
+        };
+        using Event_on_update = Event_on_init;
+        struct Event_on_move {
+            Box& box;
+            Point<int> prev;
+            Point<int> curr;
+        };
+        struct Event_on_resize {
+            Box& box;
+            Point<unsigned int> prev;
+            Point<unsigned int> curr;
+        };
+        /** @} */
+
+        /**
+         * Event callback types
+         * @{
+         */
+        using Callback_on_init = std::function<void(Event_on_init)>;
+        using Callback_on_update = std::function<void(Event_on_update)>;
+        using Callback_on_move = std::function<void(Event_on_move)>;
+        using Callback_on_resize = std::function<void(Event_on_resize)>;
+        /** @} */
 
         Box(Screen * screen, Callback_on_init callback);
 
@@ -137,7 +165,6 @@ namespace kui {
          * @return
          */
         const Attribute& attribute(unsigned int row, unsigned int column) const { return _attributes(row, column); }
-
 
 
     private:
