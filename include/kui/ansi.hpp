@@ -76,8 +76,8 @@ namespace kui {
          */
         static void attribute_background(Color c);
 
-        static void stdout(const std::string & s);
-        static void stdout(char c);
+        static void write_stdout(const std::string & s);
+        static void write_stdout(char c);
     };
 
 }

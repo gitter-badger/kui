@@ -192,7 +192,7 @@ namespace kui {
                     }
                 }
 
-                Ansi::stdout(ch);
+                Ansi::write_stdout(ch);
             }
 
             if(r+1 < end_row) {
