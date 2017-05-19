@@ -4,8 +4,6 @@
 #include <chrono>
 #include <functional>
 
-#include <optional.hpp>
-
 #include <kui/color.hpp>
 #include <kui/point.hpp>
 #include <kui/vector2d.hpp>
