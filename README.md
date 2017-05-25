@@ -1,4 +1,6 @@
 # Kui
+
+[![Join the chat at https://gitter.im/ruski-engineering/kui](https://badges.gitter.im/ruski-engineering/kui.svg)](https://gitter.im/ruski-engineering/kui?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Kool + Text User Interface = Kui!
 
 [![Travis](https://img.shields.io/travis/ruski-engineering/kui.svg?style=flat-square)](https://travis-ci.org/ruski-engineering/kui)
